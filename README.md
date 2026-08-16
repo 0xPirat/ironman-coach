@@ -18,6 +18,9 @@ Für iPhone und iPad gibt es einen nativen SwiftUI-Client. Wegen Apples vorgesch
 Gerätesignierung wird er aus Xcode mit der eigenen Apple-ID installiert; der GitHub-Build
 ohne Zertifikat ist nur im Simulator lauffähig. Die vollständige, ehrliche Anleitung steht
 in [APPLE_DISTRIBUTION.md](APPLE_DISTRIBUTION.md).
+Für Tests mit Freunden ist TestFlight der empfohlene Weg; Voraussetzungen, Kosten,
+Backend-Sicherheit und der genaue Ablauf stehen in
+[APPLE_FRIEND_TESTING.md](APPLE_FRIEND_TESTING.md).
 
 Für Android erzeugt GitHub ein direkt installierbares Debug-APK. Es ist bei Tags wie
 `android-v0.1.0` unter **Releases** als `ironman-coach-android-debug.apk` verfügbar;
