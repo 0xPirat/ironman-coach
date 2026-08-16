@@ -1,0 +1,4 @@
+- mein google kalender einbauen für die zeiten wann ich kann
+- alle harten trainings vor 18 uhr beendet
+- zeiten für die neptun schwimmhalle einbauen so dasdie schwimmtrainngis richtig geplant werden können.
+- garmin connect app muss super funktonieren auch so das der ki coach trainginsvorschläge rüberspielen kann auf die connnect app und dann auf die uhr so das man die traings vonder uhr abrufen kann

@@ -1,0 +1,81 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ['android-v*']
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'backend/mobile_auth.py'
+      - 'backend/mobile_server.py'
+      - 'backend/tests/test_mobile_auth.py'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Test mobile authentication
+        run: python3 -m unittest backend.tests.test_mobile_auth
+
+      - name: Test, lint and build installable APK
+        working-directory: android
+        run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ironman-coach-android-debug
+          path: android/app/build/outputs/apk/debug/ironman-coach-android-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-reports
+          path: |
+            android/app/build/reports/
+            android/app/build/test-results/
+          if-no-files-found: ignore
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/android-v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified APK
+        uses: actions/download-artifact@v4
+        with:
+          name: ironman-coach-android-debug
+          path: dist
+
+      - name: Publish APK on android-v tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/ironman-coach-android-debug.apk --title "Ironman Coach Android $GITHUB_REF_NAME" --notes "Installierbares Debug-APK für freie Tests. Benötigt das separat gestartete Ironman-Coach-Mobile-Backend."

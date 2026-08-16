@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Required for a Mac-hosted development backend on a trusted LAN.
+         Use HTTPS for every endpoint reachable beyond that LAN. -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

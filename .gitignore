@@ -1,0 +1,37 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local DB
+backend/ironman.db
+backend/ironman.db-wal
+backend/ironman.db-shm
+ironman.db*
+
+# Xcode / generated
+frontend/IronmanCoach.xcodeproj/
+frontend/*.xcworkspace/
+DerivedData/
+build/
+dist/
+release/
+*.spec.bak
+*.xcuserstate
+.DS_Store
+
+# Never commit secrets (they live in the macOS Keychain anyway)
+.env
+
+# Runtime logs may contain personal health and account diagnostics
+logs/
+
+# Third-party auto-generated transcripts are local research material and are
+# not redistributed under this project's MIT license.
+research/**/youtube-transcripts/
+
+# Android / Gradle generated
+android/.gradle/
+android/local.properties
+android/**/build/

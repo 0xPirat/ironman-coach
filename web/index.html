@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071018">
+  <title>Ironman Coach</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Hauptnavigation">
+      <div class="brand">
+        <div class="reactor reactor-small" aria-hidden="true"><i></i></div>
+        <div><span>MARK 01 // TRAINER</span><strong>IRONMAN<em>COACH</em></strong></div>
+      </div>
+      <nav id="main-nav">
+        <button class="nav-item active" data-view="dashboard"><b>01</b><span>Dashboard</span><small>SYS.01</small></button>
+        <button class="nav-item" data-view="goals"><b>02</b><span>Ziele</span><small>TGT.02</small></button>
+        <button class="nav-item" data-view="calendar"><b>03</b><span>Kalender</span><small>PLN.03</small></button>
+        <button class="nav-item" data-view="workouts"><b>04</b><span>Workouts</span><small>LOG.04</small></button>
+        <button class="nav-item" data-view="checkin"><b>05</b><span>Check-in</span><small>BIO.05</small></button>
+        <button class="nav-item" data-view="settings"><b>06</b><span>Einstellungen</span><small>CFG.06</small></button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="connection"><i></i><span id="connection-label">Coach verbindet…</span></div>
+        <button id="sync-button" class="outline-button"><span>↻</span> GARMIN SYNC</button>
+        <p id="sync-message" class="microcopy" aria-live="polite"></p>
+      </div>
+    </aside>
+
+    <main id="main-content">
+      <section class="view active" id="view-dashboard" aria-labelledby="dashboard-title">
+        <header class="view-header"><div><span>// TELEMETRIE</span><h1 id="dashboard-title">Dashboard</h1></div><code>SYS.01</code></header>
+        <article class="weather-strip panel" id="weather-card"><span class="weather-icon">◌</span><div><small>WETTER</small><strong>Wird geladen…</strong></div></article>
+        <div id="dashboard-empty" class="panel empty-state hidden">
+          <div class="reactor"><i></i></div><h2>Reaktor im Standby</h2><p>Verbinde Garmin oder starte mit einem täglichen Check-in.</p>
+        </div>
+        <div id="dashboard-data">
+          <article class="reactor-hero panel">
+            <div class="panel-kicker"><span>// REAKTORSTATUS</span><code>SYS.CORE</code></div>
+            <div class="hero-grid">
+              <div class="callouts left"><div><span>HRV</span><strong id="metric-hrv">—</strong><small>ms</small></div><div><span>RUHEPULS</span><strong id="metric-rhr">—</strong><small>bpm</small></div></div>
+              <div class="reactor reactor-large"><i></i><b id="readiness-core">—</b></div>
+              <div class="callouts"><div><span>READINESS</span><strong id="metric-readiness">—</strong><small>/100</small></div><div><span>BODY BATTERY</span><strong id="metric-battery">—</strong><small>/100</small></div></div>
+            </div>
+            <p id="system-status" class="system-status">// TELEMETRIE WIRD GELADEN</p>
+          </article>
+          <div class="metric-grid">
+            <article class="metric-card panel"><span>CTL · FITNESS</span><strong id="metric-ctl">—</strong><small>Langzeitlast</small></article>
+            <article class="metric-card panel red"><span>ATL · FATIGUE</span><strong id="metric-atl">—</strong><small>Akute Last</small></article>
+            <article class="metric-card panel blue"><span>TSB · FORM</span><strong id="metric-tsb">—</strong><small>Frische</small></article>
+            <article class="metric-card panel green"><span>VO₂MAX</span><strong id="metric-vo2">—</strong><small>ml/kg/min</small></article>
+          </div>
+          <article class="panel chart-panel"><div class="panel-kicker"><span>PERFORMANCE MANAGEMENT</span><code>PMC // 30 TAGE</code></div><svg id="pmc-chart" viewBox="0 0 800 220" role="img" aria-label="Verlauf von Fitness, Ermüdung und Form"></svg><div class="legend"><span class="gold">CTL Fitness</span><span class="red">ATL Fatigue</span><span class="blue">TSB Form</span></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="view-goals" aria-labelledby="goals-title">
+        <header class="view-header"><div><span>// MISSIONEN</span><h1 id="goals-title">Ziele</h1></div><button class="primary-button" data-toggle="goal-form">+ NEUES ZIEL</button></header>
+        <form id="goal-form" class="panel form-grid hidden">
+          <label class="span-2">Titel<input name="title" required placeholder="z. B. Ironman Frankfurt 2027"></label>
+          <label>Sportart<select name="sport"><option value="triathlon">Triathlon</option><option value="run">Laufen</option><option value="bike">Rad</option><option value="swim">Schwimmen</option><option value="strength">Kraft</option><option value="other">Sonstiges</option></select></label>
+          <label>Priorität<select name="priority"><option value="1">Primärziel</option><option value="2" selected>Sekundärziel</option><option value="3">Hintergrund</option></select></label>
+          <label>Event-Datum<input name="event_date" type="date"></label>
+          <label>Zielwert<input name="target_metric" placeholder="z. B. Finish oder sub-12h"></label>
+          <label class="span-2">Beschreibung<textarea name="description" rows="3"></textarea></label>
+          <div class="form-actions span-2"><button type="button" class="ghost-button" data-toggle="goal-form">Abbrechen</button><button class="primary-button">ZIEL SPEICHERN</button></div>
+        </form>
+        <div id="goals-list" class="stack-list"></div>
+      </section>
+
+      <section class="view" id="view-calendar" aria-labelledby="calendar-title">
+        <header class="view-header"><div><span>// WOCHENPLAN</span><h1 id="calendar-title">Kalender</h1></div><code>PLN.03</code></header>
+        <div id="calendar-grid" class="calendar-grid"></div>
+      </section>
+
+      <section class="view" id="view-workouts" aria-labelledby="workouts-title">
+        <header class="view-header"><div><span>// SESSION LOG</span><h1 id="workouts-title">Workouts</h1></div><button class="primary-button" data-toggle="workout-form">+ WORKOUT</button></header>
+        <form id="workout-form" class="panel form-grid hidden">
+          <label>Datum<input name="date" type="date" required></label>
+          <label>Sportart<select name="sport"><option value="swim">Schwimmen</option><option value="bike">Rad</option><option value="run">Laufen</option><option value="strength">Kraft</option><option value="brick">Koppel</option><option value="rest">Ruhe</option></select></label>
+          <label class="span-2">Titel<input name="title" required placeholder="z. B. Langer Z2-Lauf"></label>
+          <label>Dauer (Min.)<input name="duration_min" type="number" min="0" max="900"></label>
+          <label>Zielzone<select name="target_zone"><option>Z1</option><option selected>Z2</option><option>Z3</option><option>Z4</option><option>Z5</option></select></label>
+          <label class="span-2">Inhalt<textarea name="content" rows="4" placeholder="Warm-up, Kernset, Cool-down"></textarea></label>
+          <div class="form-actions span-2"><button type="button" class="ghost-button" data-toggle="workout-form">Abbrechen</button><button class="primary-button">WORKOUT SPEICHERN</button></div>
+        </form>
+        <div id="workouts-list" class="stack-list"></div>
+      </section>
+
+      <section class="view" id="view-checkin" aria-labelledby="checkin-title">
+        <header class="view-header"><div><span>// BIO-SCAN</span><h1 id="checkin-title">Daily Check-in</h1></div><code>BIO.05</code></header>
+        <form id="checkin-form" class="checkin-layout">
+          <fieldset class="panel"><legend>KÖRPER <code>BIO.BODY</code></legend><label>Muskelkater <output data-for="soreness">1</output><input name="soreness" type="range" min="1" max="5" value="1"></label><label>Schmerz-Level <output data-for="pain_level">0</output><input name="pain_level" type="range" min="0" max="10" value="0"></label><label>Schmerz-Ort<input name="pain_location" placeholder="optional"></label></fieldset>
+          <fieldset class="panel"><legend>KOPF <code>BIO.MIND</code></legend><label>Motivation <output data-for="motivation">3</output><input name="motivation" type="range" min="1" max="5" value="3"></label><label>Mentale Energie <output data-for="mental_energy">3</output><input name="mental_energy" type="range" min="1" max="5" value="3"></label><label>Lebensstress <output data-for="life_stress">2</output><input name="life_stress" type="range" min="1" max="5" value="2"></label></fieldset>
+          <fieldset class="panel span-2"><legend>HEUTE <code>SYS.PLAN</code></legend><div class="form-grid"><label>Verfügbare Zeit (Min.)<input name="available_time" type="number" min="0" max="600" step="15" value="60"></label><label class="span-2">Notizen<textarea name="notes" rows="4" placeholder="Wie fühlst du dich heute?"></textarea></label></div></fieldset>
+          <div class="form-actions span-2"><span id="checkin-message" aria-live="polite"></span><button class="primary-button">CHECK-IN SPEICHERN</button></div>
+        </form>
+      </section>
+
+      <section class="view" id="view-settings" aria-labelledby="settings-title">
+        <header class="view-header"><div><span>// SYSTEMKONFIGURATION</span><h1 id="settings-title">Einstellungen</h1></div><code>CFG.06</code></header>
+        <div class="settings-grid">
+          <form id="garmin-settings" class="panel settings-card"><div class="panel-kicker"><span>GARMIN CONNECT</span><code id="garmin-status">NICHT VERBUNDEN</code></div><p>Die Zugangsdaten werden ausschließlich im sicheren Tresor deines Betriebssystems gespeichert.</p><label>E-Mail<input name="email" type="email" autocomplete="username" required></label><label>Passwort<input name="password" type="password" autocomplete="current-password" required></label><button class="primary-button">SICHER SPEICHERN</button><small id="garmin-message" aria-live="polite"></small></form>
+          <form id="calendar-settings" class="panel settings-card"><div class="panel-kicker"><span>KALENDER</span><code id="calendar-status">OPTIONAL</code></div><p>Auf Windows empfiehlt sich eine private iCal-URL. Auf dem Mac kann die App den Apple-Kalender lesen.</p><label>Quelle<select name="source"><option value="auto">Automatisch</option><option value="apple">Apple-Kalender</option><option value="ics">Private iCal-URL</option></select></label><label>Private iCal-URL<input name="ics_url" type="password" autocomplete="off" placeholder="https://…/basic.ics"></label><button class="primary-button">KALENDER SPEICHERN</button><small id="calendar-message" aria-live="polite"></small></form>
+          <article class="panel settings-card"><div class="panel-kicker"><span>COACH-WISSEN</span><code id="research-status">PRÜFUNG…</code></div><p>Recherche, Pläne, Chat und Coach-Gedächtnis liegen lokal. Die Recherche wird passend zu jeder Frage abgerufen.</p><dl id="app-info"></dl></article>
+          <article class="panel settings-card"><div class="panel-kicker"><span>CLAUDE LOGIN</span><code>ERFORDERLICH</code></div><p>Der KI-Coach verwendet dein eigenes Claude-Pro-/Max-Konto. Einmalig im Terminal anmelden:</p><pre><code>claude /login</code></pre><p class="microcopy">Es wird absichtlich kein kostenpflichtiger API-Key verwendet.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <aside class="chat-panel" aria-label="Coach-Chat">
+      <header><div class="reactor reactor-tiny"><i></i></div><div><strong>Coach</strong><span id="chat-status">ONLINE</span></div><button id="chat-toggle" aria-label="Chat ein- oder ausklappen">×</button></header>
+      <div id="chat-messages" class="chat-messages"><div class="chat-standby"><span>// STANDBY</span><p>Frag deinen Coach: „Wie sieht meine Woche aus?“ oder „Bewerte heute.“</p></div></div>
+      <form id="chat-form"><textarea id="chat-input" rows="1" placeholder="Nachricht an den Coach…" aria-label="Nachricht an den Coach"></textarea><button aria-label="Nachricht senden">➤</button></form>
+    </aside>
+  </div>
+  <button id="chat-open" class="chat-open hidden" aria-label="Coach-Chat öffnen">COACH ◉</button>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

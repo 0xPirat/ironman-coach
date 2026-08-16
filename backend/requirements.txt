@@ -1,0 +1,13 @@
+# Ironman Coach — Python sidecar dependencies
+claude-agent-sdk>=0.2.87
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+keyring>=25.0          # macOS Keychain for Garmin creds (never plaintext)
+pywebview>=5.4         # cross-platform native desktop window (macOS + Windows)
+garminconnect>=0.2.19  # Garmin Forerunner 965 data sync
+httpx>=0.27            # used by custom tools / general HTTP
+requests>=2.31         # Open-Meteo weather fetch (no API key required)
+icalendar>=6.0         # Google Calendar private iCal URL parsing (backend/gcal.py)
+recurring-ical-events>=3.3  # expand RRULE recurrences into concrete busy slots
+pyobjc-framework-EventKit>=10.3; platform_system == "Darwin"  # Apple Calendar only

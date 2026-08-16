@@ -1,0 +1,97 @@
+name: IronmanCoach
+options:
+  bundleIdPrefix: com.johannesbenedict
+  deploymentTarget:
+    macOS: "14.0"
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.10"
+    ENABLE_HARDENED_RUNTIME: NO          # dev: allow spawning the Python child process freely
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  IronmanCoach:
+    type: application
+    platform: macOS
+    sources:
+      - path: IronmanCoach
+        excludes:
+          - Info.plist
+          - Info-iOS.plist
+    info:
+      path: IronmanCoach/Info.plist
+      properties:
+        CFBundleDisplayName: Coach
+        LSMinimumSystemVersion: "14.0"
+        NSHumanReadableCopyright: "Local-only training coach"
+        # App Transport Security: allow plaintext to the local sidecar (127.0.0.1).
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesbenedict.ironmancoach
+        PRODUCT_NAME: Coach
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_APP_SANDBOX: NO            # dev: sandbox off so we can launch the sidecar + reach 127.0.0.1
+        COMBINE_HIDPI_IMAGES: YES
+
+  IronmanCoachMobile:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: IronmanCoach
+        excludes:
+          - Info.plist
+          - Info-iOS.plist
+    info:
+      path: IronmanCoach/Info-iOS.plist
+      properties:
+        CFBundleDisplayName: Coach
+        NSHumanReadableCopyright: "Open-source self-hosted training coach"
+        NSLocalNetworkUsageDescription: "Coach verbindet sich mit deinem selbst gehosteten Trainingsserver im lokalen Netzwerk."
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.johannesbenedict.ironmancoach.mobile
+        PRODUCT_NAME: Coach
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+        CODE_SIGN_STYLE: Automatic
+
+schemes:
+  Coach-macOS:
+    build:
+      targets:
+        IronmanCoach: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+  Coach-iOS:
+    build:
+      targets:
+        IronmanCoachMobile: all
+    run:
+      config: Debug
+    archive:
+      config: Release

@@ -1,0 +1,89 @@
+name: Build desktop downloads
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: Ironman-Coach-Windows-x64
+            archive: windows
+          - os: macos-26
+            artifact: Ironman-Coach-macOS-Apple-Silicon
+            archive: mac
+          - os: macos-26-intel
+            artifact: Ironman-Coach-macOS-Intel
+            archive: mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install build dependencies
+        run: python -m pip install -r backend/requirements.txt pyinstaller
+      - name: Build desktop app
+        run: pyinstaller --noconfirm --clean IronmanCoach.spec
+      - name: Verify bundled research
+        shell: bash
+        run: test -f "dist/Ironman Coach/_internal/research/ironman-training-methodology.md" || test -f "dist/Ironman Coach.app/Contents/Frameworks/research/ironman-training-methodology.md" || test -f "dist/Ironman Coach.app/Contents/Resources/research/ironman-training-methodology.md"
+      - name: Smoke-test packaged backend (Windows)
+        if: matrix.archive == 'windows'
+        shell: pwsh
+        run: '& "dist/Ironman Coach/Ironman Coach.exe" --smoke-test'
+      - name: Smoke-test packaged backend (macOS)
+        if: matrix.archive == 'mac'
+        run: '"dist/Ironman Coach.app/Contents/MacOS/Ironman Coach" --smoke-test'
+      - name: Archive Windows app
+        if: matrix.archive == 'windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release
+          Compress-Archive -Path "dist/Ironman Coach/*" -DestinationPath "release/${{ matrix.artifact }}.zip"
+      - name: Archive macOS app
+        if: matrix.archive == 'mac'
+        run: |
+          mkdir -p release
+          ditto -c -k --sequesterRsrc --keepParent "dist/Ironman Coach.app" "release/${{ matrix.artifact }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: release/*.zip
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          generate_release_notes: true
+          body: |
+            ## Ironman Coach Desktop
+
+            Lade die passende ZIP-Datei herunter, entpacke sie und starte die App.
+
+            - **Windows:** `Ironman-Coach-Windows-x64.zip`
+            - **Apple Silicon (M1/M2/M3/M4/M5):** `Ironman-Coach-macOS-Apple-Silicon.zip`
+            - **Intel Mac:** `Ironman-Coach-macOS-Intel.zip`
+
+            Die Builds sind derzeit nicht mit einem kostenpflichtigen Entwicklerzertifikat signiert. Windows SmartScreen beziehungsweise macOS Gatekeeper können deshalb beim ersten Start nach einer Bestätigung fragen.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
