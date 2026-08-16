@@ -1,6 +1,7 @@
 """Native macOS/Windows launcher for the local Ironman Coach web UI."""
 from __future__ import annotations
 
+import json
 import os
 import socket
 import sys
@@ -55,7 +56,20 @@ def main() -> None:
     os.environ.pop("ANTHROPIC_API_KEY", None)
 
     smoke_test = "--smoke-test" in sys.argv
-    url = None if smoke_test else _existing_server_url()
+    if smoke_test:
+        # CI-safe package verification: importing the full API also imports the
+        # coach SDK, and init_db proves that bundled schema/resources resolve.
+        # Avoid opening a native window or depending on a runner's network loop.
+        from backend.db import database as db
+        from backend.main import app_info
+        db.init_db()
+        payload = app_info()
+        if not payload["research_ready"]:
+            raise RuntimeError("Gebündelte Trainingsrecherche fehlt.")
+        print(json.dumps(payload, ensure_ascii=False))
+        return
+
+    url = _existing_server_url()
     server = worker = None
     if url is None:
         port = _free_port()
@@ -68,15 +82,6 @@ def main() -> None:
         worker = threading.Thread(target=server.run, name="coach-sidecar", daemon=True)
         worker.start()
         _wait_for_server(url)
-
-    if smoke_test:
-        with urlopen(f"{url}/app-info", timeout=5) as response:
-            payload = response.read().decode("utf-8")
-        print(payload)
-        if server and worker:
-            server.should_exit = True
-            worker.join(timeout=3)
-        return
 
     import webview
 
