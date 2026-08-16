@@ -78,4 +78,4 @@ jobs:
       - name: Publish APK on android-v tag
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/ironman-coach-android-debug.apk --title "Ironman Coach Android $GITHUB_REF_NAME" --notes "Installierbares Debug-APK für freie Tests. Benötigt das separat gestartete Ironman-Coach-Mobile-Backend."
+        run: gh release create "$GITHUB_REF_NAME" dist/ironman-coach-android-debug.apk --repo "$GITHUB_REPOSITORY" --title "Ironman Coach Android $GITHUB_REF_NAME" --notes "Installierbares Debug-APK für freie Tests. Benötigt das separat gestartete Ironman-Coach-Mobile-Backend."
